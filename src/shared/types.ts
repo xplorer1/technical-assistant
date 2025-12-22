@@ -1,6 +1,6 @@
 /**
  * Shared type definitions for the Technical Assistant
- * 
+ *
  * These types define the contract between frontend and backend.
  * They're organized by domain:
  * - Chat: Messages and conversations
@@ -18,9 +18,9 @@
  * This enables users to verify information and explore further.
  */
 export interface SourceReference {
-  documentId: string;
-  documentName: string;
-  excerpt: string;
+    documentId: string;
+    documentName: string;
+    excerpt: string;
 }
 
 /**
@@ -28,11 +28,11 @@ export interface SourceReference {
  * Messages can be from the user or the assistant.
  */
 export interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  sources?: SourceReference[];
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: Date;
+    sources?: SourceReference[];
 }
 
 /**
@@ -40,11 +40,11 @@ export interface ChatMessage {
  * Sessions are persisted to allow users to continue past discussions.
  */
 export interface ConversationSession {
-  id: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  messages: ChatMessage[];
+    id: string;
+    title: string;
+    createdAt: Date;
+    updatedAt: Date;
+    messages: ChatMessage[];
 }
 
 // ============================================================================
@@ -70,14 +70,14 @@ export type DocumentStatus = 'pending' | 'indexed' | 'error';
  * Documents are chunked and embedded for RAG retrieval.
  */
 export interface Document {
-  id: string;
-  name: string;
-  type: DocumentType;
-  content: string;
-  uploadedAt: Date;
-  indexedAt?: Date;
-  status: DocumentStatus;
-  chunkCount: number;
+    id: string;
+    name: string;
+    type: DocumentType;
+    content: string;
+    uploadedAt: Date;
+    indexedAt?: Date;
+    status: DocumentStatus;
+    chunkCount: number;
 }
 
 /**
@@ -85,17 +85,17 @@ export interface Document {
  * Chunks are the unit of retrieval in the RAG system.
  */
 export interface DocumentChunk {
-  id: string;
-  documentId: string;
-  content: string;
-  embedding: number[];
-  metadata: ChunkMetadata;
+    id: string;
+    documentId: string;
+    content: string;
+    embedding: number[];
+    metadata: ChunkMetadata;
 }
 
 export interface ChunkMetadata {
-  documentName: string;
-  chunkIndex: number;
-  section?: string;
+    documentName: string;
+    chunkIndex: number;
+    section?: string;
 }
 
 // ============================================================================
@@ -106,15 +106,15 @@ export interface ChunkMetadata {
  * Entry in the vector store for similarity search.
  */
 export interface VectorEntry {
-  id: string;
-  documentId: string;
-  chunkIndex: number;
-  content: string;
-  embedding: number[];
-  metadata: {
-    documentName: string;
-    section?: string;
-  };
+    id: string;
+    documentId: string;
+    chunkIndex: number;
+    content: string;
+    embedding: number[];
+    metadata: {
+        documentName: string;
+        section?: string;
+    };
 }
 
 // ============================================================================
@@ -126,8 +126,8 @@ export interface VectorEntry {
  * Invalid queries are rejected before processing.
  */
 export interface ValidationResult {
-  valid: boolean;
-  error?: string;
+    valid: boolean;
+    error?: string;
 }
 
 /**
@@ -135,9 +135,9 @@ export interface ValidationResult {
  * Includes conversation history and relevant documents.
  */
 export interface QueryContext {
-  conversationHistory: ChatMessage[];
-  relevantDocuments: DocumentChunk[];
-  systemPrompt: string;
+    conversationHistory: ChatMessage[];
+    relevantDocuments: DocumentChunk[];
+    systemPrompt: string;
 }
 
 /**
@@ -145,9 +145,9 @@ export interface QueryContext {
  * Includes confidence score for uncertainty handling.
  */
 export interface RAGResponse {
-  content: string;
-  sources: SourceReference[];
-  confidence: number;
+    content: string;
+    sources: SourceReference[];
+    confidence: number;
 }
 
 // ============================================================================
@@ -158,9 +158,9 @@ export interface RAGResponse {
  * Options for text generation via Ollama.
  */
 export interface GenerationOptions {
-  model?: string;
-  temperature?: number;
-  maxTokens?: number;
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
 }
 
 // ============================================================================
@@ -172,22 +172,22 @@ export interface GenerationOptions {
  * Dates are stored as ISO strings.
  */
 export interface StoredSession {
-  id: string;
-  title: string;
-  createdAt: string; // ISO date
-  updatedAt: string; // ISO date
-  messages: StoredMessage[];
+    id: string;
+    title: string;
+    createdAt: string; // ISO date
+    updatedAt: string; // ISO date
+    messages: StoredMessage[];
 }
 
 /**
  * Message format for JSON persistence.
  */
 export interface StoredMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string; // ISO date
-  sources?: SourceReference[];
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: string; // ISO date
+    sources?: SourceReference[];
 }
 
 // ============================================================================
@@ -198,30 +198,30 @@ export interface StoredMessage {
  * Request body for POST /api/chat
  */
 export interface ChatRequest {
-  sessionId?: string;
-  message: string;
+    sessionId?: string;
+    message: string;
 }
 
 /**
  * Response body for POST /api/chat
  */
 export interface ChatResponse {
-  sessionId: string;
-  response: ChatMessage;
+    sessionId: string;
+    response: ChatMessage;
 }
 
 /**
  * Response body for GET /api/health
  */
 export interface HealthResponse {
-  status: 'ok' | 'error';
-  ollama: boolean;
+    status: 'ok' | 'error';
+    ollama: boolean;
 }
 
 /**
  * Response body for POST /api/documents
  */
 export interface DocumentUploadResponse {
-  documentId: string;
-  status: DocumentStatus;
+    documentId: string;
+    status: DocumentStatus;
 }
