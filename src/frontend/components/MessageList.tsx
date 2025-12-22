@@ -9,7 +9,6 @@ import { MessageContent } from './MessageContent';
  * Renders the conversation history with proper formatting for both user
  * and assistant messages. Addresses Requirement 4.1: display conversation history.
  *
- * Interview talking points:
  * 1. Auto-scroll behavior - UX pattern for chat interfaces
  * 2. Conditional rendering based on message role
  * 3. Component composition - MessageItem handles individual message rendering

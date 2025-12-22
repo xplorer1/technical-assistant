@@ -9,7 +9,6 @@ import { ConversationSession } from '@shared/types';
  * - Select a session to load its history (Requirement 6.2)
  * - Create new sessions (Requirement 6.3)
  *
- * Interview talking points:
  * 1. This component follows the "smart/dumb" component pattern - it receives
  *    data and callbacks as props, making it easy to test and reuse
  * 2. Session selection uses a callback pattern rather than internal routing,

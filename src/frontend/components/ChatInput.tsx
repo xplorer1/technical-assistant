@@ -7,7 +7,6 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
  * Addresses Requirement 4.1: "WHEN a user opens the application THEN the
  * Technical Assistant SHALL display a chat interface with a text input field"
  *
- * Interview talking points:
  * 1. Controlled component pattern - React manages the input state
  * 2. useCallback for memoized event handlers to prevent unnecessary re-renders
  * 3. Accessibility: proper labels, keyboard support, disabled states

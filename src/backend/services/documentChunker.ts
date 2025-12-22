@@ -10,7 +10,6 @@
  * 2. Contain coherent, self-contained information
  * 3. Overlap slightly to preserve context at boundaries
  *
- * INTERVIEW TALKING POINTS:
  * - Chunk size trade-off: Too small = lost context, too large = diluted relevance
  * - Overlap prevents information loss at chunk boundaries
  * - Semantic chunking (by paragraphs/sections) vs fixed-size chunking

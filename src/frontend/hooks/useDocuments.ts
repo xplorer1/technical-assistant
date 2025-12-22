@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Document, DocumentStatus } from '@shared/types';
+import { Document } from '@shared/types';
 import { api, ApiError } from '../services/apiClient';
 
 /**
@@ -10,7 +10,6 @@ import { api, ApiError } from '../services/apiClient';
  * - 3.1: Index documentation files for future reference
  * - 3.3: Support common formats including Markdown, plain text, and PDF
  *
- * Interview talking points:
  * 1. This hook follows the same pattern as useSessions - separating
  *    document management from UI concerns
  *

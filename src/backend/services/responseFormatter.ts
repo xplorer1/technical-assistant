@@ -13,7 +13,6 @@
  * - Ensures consistent visual presentation
  * - Makes responses more readable and professional
  *
- * INTERVIEW TALKING POINTS:
  * - Separation of concerns: LLM generates content, formatter handles presentation
  * - Regex patterns for markdown parsing (trade-offs vs full parser)
  * - Immutability: formatting functions don't modify input

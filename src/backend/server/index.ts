@@ -14,7 +14,6 @@
  * - JSON middleware parses request bodies automatically
  * - Error handling middleware catches unhandled errors
  *
- * INTERVIEW TALKING POINTS:
  * - Middleware pattern: Request flows through a chain of handlers
  * - Separation of concerns: Routes delegate to services
  * - Error handling: Centralized error middleware for consistency

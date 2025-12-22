@@ -12,7 +12,6 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
  * - 2.3: Code examples with proper syntax highlighting and language identification
  * - 4.3: Render response with proper formatting including code blocks, lists, paragraphs
  *
- * Interview talking points:
  * 1. react-markdown is a popular choice for rendering markdown in React because it:
  *    - Converts markdown to React components (not dangerouslySetInnerHTML)
  *    - Allows custom component overrides for fine-grained control

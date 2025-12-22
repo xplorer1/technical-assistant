@@ -18,7 +18,6 @@ import './styles/app.css';
  * - MessageList: Main chat area
  * - ChatInput: Message input
  *
- * Interview talking points:
  * 1. This is the "container" component that manages application state
  *    through custom hooks, while presentational components handle rendering
  *

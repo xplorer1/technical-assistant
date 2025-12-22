@@ -8,7 +8,6 @@
  * Different formats (Markdown, plain text, PDF) store text differently, so we need
  * format-specific parsers. The extracted text is then chunked and embedded.
  *
- * INTERVIEW TALKING POINTS:
  * - Strategy pattern: Each parser implements the same interface but handles different formats
  * - Separation of concerns: Parsing is isolated from chunking and embedding
  * - Error handling: Graceful degradation when parsing fails

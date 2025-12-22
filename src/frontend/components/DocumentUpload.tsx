@@ -17,7 +17,6 @@ import { LoadingIndicator } from './LoadingIndicator';
  * - 3.1: Index documentation files for future reference
  * - 3.3: Support common formats including Markdown, plain text, and PDF
  *
- * Interview talking points:
  * 1. File input is hidden and triggered via a styled button - this is a
  *    common pattern for custom file upload UIs
  *

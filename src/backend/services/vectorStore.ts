@@ -14,7 +14,6 @@
  * 3. We find documents whose vectors are "close" to the query vector
  * 4. Closeness is measured using cosine similarity
  *
- * INTERVIEW TALKING POINTS:
  * - Cosine similarity vs Euclidean distance (cosine is direction-based, better for text)
  * - Trade-offs of in-memory vs persistent vector stores (speed vs durability)
  * - Approximate nearest neighbor (ANN) algorithms for scale (we use exact search here)

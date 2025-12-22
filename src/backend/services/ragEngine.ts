@@ -10,7 +10,6 @@
  * LLMs have knowledge cutoffs and can hallucinate. RAG grounds responses
  * in actual documents, improving accuracy and enabling domain-specific answers.
  *
- * INTERVIEW TALKING POINTS:
  * - RAG vs fine-tuning (RAG is cheaper, more flexible, easier to update)
  * - Retrieval quality directly impacts generation quality
  * - Confidence scoring helps identify when the model is uncertain

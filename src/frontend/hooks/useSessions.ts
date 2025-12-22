@@ -11,7 +11,6 @@ import { api, ApiError } from '../services/apiClient';
  * - 6.2: Load and display full conversation history
  * - 6.3: Create new sessions and persist to local storage
  *
- * Interview talking points:
  * 1. This hook separates session management from chat logic, following
  *    the single responsibility principle
  *

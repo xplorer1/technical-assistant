@@ -11,7 +11,6 @@ import { api, ApiError } from '../services/apiClient';
  * - 1.2: Maintain conversation context
  * - 4.2: Display loading indicator until response is ready
  *
- * Interview talking points:
  * 1. Custom hooks encapsulate related state and logic, making components
  *    cleaner and enabling reuse across the application
  *

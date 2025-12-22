@@ -6,7 +6,6 @@
  * - 4.2: Handle loading and error states
  * - 5.2: Display clear error messages when Ollama is unavailable
  *
- * Interview talking points:
  * 1. This follows the "service layer" pattern - all API calls go through
  *    a single module, making it easy to:
  *    - Add authentication headers
@@ -21,7 +20,6 @@
  */
 
 import {
-  ChatMessage,
   ChatRequest,
   ChatResponse,
   ConversationSession,

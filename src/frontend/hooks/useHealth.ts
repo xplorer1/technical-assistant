@@ -8,7 +8,6 @@ import { api, ApiError } from '../services/apiClient';
  * Addresses Requirement 5.2: Display clear error message and retry options
  * when Ollama service is unavailable.
  *
- * Interview talking points:
  * 1. Health checks are important for user experience - we want to show
  *    a clear message if the backend or Ollama is down, rather than
  *    letting users try to send messages that will fail
