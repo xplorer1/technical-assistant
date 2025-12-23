@@ -47,13 +47,13 @@ export interface RAGEngineConfig {
  *
  * WHY THESE VALUES:
  * - topK=5: Balance between context richness and noise
- * - similarityThreshold=0.3: Filter out clearly irrelevant results
+ * - similarityThreshold=0.35: Lower threshold to catch relevant docs, rely on prompt to prevent hallucination
  * - confidenceThreshold=0.5: Trigger uncertainty message when unsure
  * - maxContextTokens=2000: Leave room for query and response
  */
 export const DEFAULT_RAG_CONFIG: RAGEngineConfig = {
   topK: 5,
-  similarityThreshold: 0.3,
+  similarityThreshold: 0.35,  // Lowered to catch more relevant results
   confidenceThreshold: 0.5,
   maxContextTokens: 2000,
 };
@@ -162,9 +162,73 @@ export class RAGEngine implements IRAGEngine {
     const results = this.vectorStore.search(queryEmbedding, limit);
 
     // Filter by similarity threshold and convert to DocumentChunk
-    return results
+    const chunks = results
       .filter((r) => r.score >= this.config.similarityThreshold)
       .map((r) => this.vectorEntryToChunk(r));
+
+    // Extract potential project/topic names from the query
+    // This helps validate that retrieved chunks are actually about what the user asked
+    const queryTopics = this.extractTopicsFromQuery(query);
+    
+    // If the user mentioned a specific project name, filter chunks to those that
+    // either mention that project or come from a document with that name
+    if (queryTopics.length > 0) {
+      const filteredChunks = chunks.filter((chunk) => {
+        const docNameLower = chunk.metadata.documentName.toLowerCase();
+        const contentLower = chunk.content.toLowerCase();
+        
+        // Check if any query topic matches the document name or content
+        return queryTopics.some((topic) => 
+          docNameLower.includes(topic) || contentLower.includes(topic)
+        );
+      });
+      
+      // If we found topic-specific chunks, use those; otherwise fall back to all chunks
+      // This prevents returning innx-be docs when asking about nebvla
+      if (filteredChunks.length > 0) {
+        return filteredChunks;
+      }
+      
+      // If no chunks match the specific topic, return empty to trigger "I don't know"
+      // This is the key to preventing hallucination about unknown projects
+      return [];
+    }
+
+    return chunks;
+  }
+
+  /**
+   * Extract potential project/topic names from a query.
+   * 
+   * This is a simple heuristic that looks for words that might be project names.
+   * In production, you might use NER (Named Entity Recognition) for this.
+   */
+  private extractTopicsFromQuery(query: string): string[] {
+    const queryLower = query.toLowerCase();
+    
+    // Common question patterns to remove
+    const patterns = [
+      /how (do|can|to) (i |you )?(set up|install|configure|use|run|start)/gi,
+      /what is/gi,
+      /tell me about/gi,
+      /explain/gi,
+      /help with/gi,
+    ];
+    
+    let cleaned = queryLower;
+    for (const pattern of patterns) {
+      cleaned = cleaned.replace(pattern, '');
+    }
+    
+    // Remove common words and punctuation
+    const stopWords = ['the', 'a', 'an', 'on', 'my', 'computer', 'machine', 'system', 'please', 'can', 'you', 'i', 'me', 'how', 'what', 'where', 'when', 'why', 'is', 'are', 'do', 'does', 'to', 'for', 'with', 'and', 'or', 'in', 'it', 'this', 'that'];
+    
+    const words = cleaned
+      .replace(/[?.,!]/g, '')
+      .split(/\s+/)
+      .filter((word) => word.length > 2 && !stopWords.includes(word));
+    
+    return words;
   }
 
   /**
@@ -231,11 +295,21 @@ export class RAGEngine implements IRAGEngine {
   ): string {
     const parts: string[] = [];
 
-    // System instructions
-    parts.push(`You are a helpful technical assistant. Answer questions based on the provided context.
-If the context doesn't contain relevant information, say so honestly.
-Always cite your sources when using information from the context.
-Format code examples with proper syntax highlighting using markdown code blocks.`);
+    // System instructions - CRITICAL for preventing hallucination
+    parts.push(`You are a helpful technical assistant that ONLY answers questions based on the provided context.
+
+IMPORTANT RULES:
+1. ONLY use information from the CONTEXT section below to answer questions.
+2. If the context does NOT contain information about what the user is asking, you MUST say: "I don't have information about [topic] in my knowledge base."
+3. DO NOT make up information, guess, or use general knowledge not in the context.
+4. DO NOT substitute one project's information for another project.
+5. If asked about a project or topic not in the context, clearly state you don't have documentation for it.
+6. The CONVERSATION HISTORY is ONLY for understanding what was discussed before - DO NOT use previous answers as facts for new questions.
+7. If the user asks about a NEW topic not in the current CONTEXT, you must search the knowledge base fresh - do not reuse answers from history.
+8. Always cite your sources when using information from the context.
+9. Format code examples with proper syntax highlighting using markdown code blocks.
+
+Remember: It's better to say "I don't know" than to provide incorrect information.`);
 
     // Retrieved context
     if (chunks.length > 0) {
@@ -248,12 +322,19 @@ Format code examples with proper syntax highlighting using markdown code blocks.
       }
       parts.push('\n--- END CONTEXT ---\n');
     } else {
-      parts.push('\n(No relevant documentation found for this query)\n');
+      parts.push('\n--- NO RELEVANT DOCUMENTATION FOUND ---');
+      parts.push('There is no documentation in the knowledge base that matches this query.');
+      parts.push('You must tell the user you do not have information about this topic.');
+      parts.push('--- END ---\n');
     }
 
     // Conversation history (last few messages for context)
+    // NOTE: History is for conversational continuity, NOT as a source of facts
     if (history.length > 0) {
-      parts.push('--- CONVERSATION HISTORY ---');
+      parts.push('--- CONVERSATION HISTORY (for reference only) ---');
+      parts.push('NOTE: The conversation history below is ONLY for understanding the flow of conversation.');
+      parts.push('DO NOT use information from previous answers to answer new questions about different topics.');
+      parts.push('Each new question must be answered ONLY from the CONTEXT section above.\n');
       const recentHistory = history.slice(-6); // Last 3 exchanges
       for (const msg of recentHistory) {
         const role = msg.role === 'user' ? 'User' : 'Assistant';

@@ -16,6 +16,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "paths": {
       "@shared/*": ["src/shared/*"],
       "@backend/*": ["src/backend/*"],

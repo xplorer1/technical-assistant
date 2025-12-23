@@ -1,3 +1,5 @@
+/// <reference path="../../types/pdf-parse.d.ts" />
+
 /**
  * Document Parser Service
  *

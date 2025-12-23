@@ -37,9 +37,9 @@ export interface OllamaClientConfig {
  * These match Ollama's default setup for easy local development.
  */
 export const DEFAULT_OLLAMA_CONFIG: OllamaClientConfig = {
-    baseUrl: 'http://localhost:11434',
-    defaultModel: 'llama2',
-    embeddingModel: 'llama2',
+    baseUrl: 'https://waterproof-speaks-instructors-measured.trycloudflare.com',
+    defaultModel: 'mixtral:8x7b',
+    embeddingModel: 'llama3.1:8b',
     timeoutMs: 30000, // 30 seconds - matches our requirement for response time
 };
 
@@ -104,7 +104,6 @@ export interface IOllamaClient {
     generateCompletion(prompt: string, options?: GenerationOptions): Promise<string>;
     generateEmbedding(text: string): Promise<number[]>;
 }
-
 
 /**
  * Ollama Client Implementation

@@ -21,6 +21,7 @@
 
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { createOllamaClient, IOllamaClient } from '../clients/ollamaClient';
 import {
@@ -130,6 +131,15 @@ export function createApp(config: Partial<ServerConfig> = {}): Express {
     // JSON body parser
     // Automatically parses JSON request bodies into req.body
     app.use(express.json({ limit: '10mb' })); // 10MB limit for document uploads
+
+    // Configure multer for file uploads
+    // Store files in memory as Buffer (for small files like docs)
+    const upload = multer({
+        storage: multer.memoryStorage(),
+        limits: {
+            fileSize: 10 * 1024 * 1024, // 10MB limit
+        },
+    });
 
     // Request logging (simple version - production would use morgan or similar)
     app.use((req: Request, _res: Response, next: NextFunction) => {
@@ -362,7 +372,7 @@ export function createApp(config: Partial<ServerConfig> = {}): Express {
      * Upload and index a document for the knowledge base.
      *
      * This endpoint:
-     * 1. Accepts document content (base64 or text)
+     * 1. Accepts file upload via multipart/form-data
      * 2. Detects document type from filename
      * 3. Stores the document
      * 4. Indexes it for RAG retrieval
@@ -374,19 +384,21 @@ export function createApp(config: Partial<ServerConfig> = {}): Express {
      *
      * Requirements: 3.1, 3.2
      */
-    app.post('/api/documents', async (req: Request, res: Response, next: NextFunction) => {
+    app.post('/api/documents', upload.single('file'), async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { name, content } = req.body as { name: string; content: string };
+            const file = req.file;
 
-            // Validate required fields
-            if (!name || !content) {
+            // Validate file was uploaded
+            if (!file) {
                 res.status(400).json({
-                    error: 'Document name and content are required',
-                    code: 'MISSING_FIELDS',
+                    error: 'No file uploaded. Please select a file to upload.',
+                    code: 'MISSING_FILE',
                 });
                 return;
             }
 
+            const name = file.originalname;
+            
             // Detect document type from filename
             const type = detectDocumentType(name);
             if (!type) {
@@ -395,6 +407,16 @@ export function createApp(config: Partial<ServerConfig> = {}): Express {
                     code: 'UNSUPPORTED_FORMAT',
                 });
                 return;
+            }
+
+            // Convert buffer to string for text files, or base64 for PDF
+            let content: string;
+            if (type === 'pdf') {
+                // PDF files need to be stored as base64 for later parsing
+                content = file.buffer.toString('base64');
+            } else {
+                // Text files (markdown, txt) are stored as UTF-8 strings
+                content = file.buffer.toString('utf-8');
             }
 
             // Save document
